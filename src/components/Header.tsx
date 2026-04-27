@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import BrandLogo from "./BrandLogo";
+import { siteConfig } from "@/lib/config";
 
 const NAV = [
   { href: "#about", label: "About" },
@@ -74,8 +76,13 @@ export default function Header() {
       }`}
     >
       <div className="mx-auto flex max-w-[88rem] items-center justify-between px-6 lg:px-10">
-        <a href="#top" className="font-display text-lg tracking-tight">
-          <span className="text-[var(--color-accent)]">●</span> yanahiro
+        <a
+          href="#top"
+          className="group inline-flex items-center gap-2.5 font-display text-lg tracking-tight"
+          aria-label={siteConfig.brand}
+        >
+          <BrandLogo className="h-6 w-auto text-[var(--color-accent)] transition-transform duration-300 group-hover:scale-110" />
+          <span className="text-[var(--color-fg)]">{siteConfig.brand}</span>
         </a>
         <nav className="hidden items-center gap-7 font-display text-sm text-[var(--color-fg-muted)] md:flex">
           {NAV.map((item) => (

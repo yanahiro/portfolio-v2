@@ -4,8 +4,8 @@ const env = (key: string, fallback = "") =>
 const X_HANDLE = env("NEXT_PUBLIC_X_HANDLE", "yanatch1982");
 
 export const siteConfig = {
-  name: env("NEXT_PUBLIC_SITE_NAME", "yanahiro"),
-  brand: env("NEXT_PUBLIC_BRAND", "yanahiro"),
+  name: env("NEXT_PUBLIC_SITE_NAME", "Yanatch"),
+  brand: env("NEXT_PUBLIC_BRAND", "Yanatch"),
   description: env(
     "NEXT_PUBLIC_SITE_DESCRIPTION",
     "Hiroki Yanagisawa のポートフォリオ。マネジメント・システム設計・プログラミングを軸に、フリーランスエンジニアとして活動しています。"

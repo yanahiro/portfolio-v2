@@ -113,7 +113,7 @@ export default function Loader() {
 
       <div className="relative z-10 flex flex-col items-center gap-8">
         <div className="font-mono text-[10px] uppercase tracking-[0.4em] text-[var(--color-fg-muted)]">
-          / yanahiro · 2026
+          / Yanatch · 2026
         </div>
 
         <div className="flex items-end gap-5">
