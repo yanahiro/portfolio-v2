@@ -108,6 +108,10 @@ export default function Vision() {
               <span className="text-[var(--color-fg)]">Web にとらわれないコミュニティ</span>
               を作ることが目標です。
             </p>
+            <p className="vision-line">
+              サービスの開発責任、フリーランス時代に出会った人たち、そして大阪。
+              これまで支えられて積み上げてきたものを、これからは支える側で還していきたい。
+            </p>
           </div>
         </div>
       </div>

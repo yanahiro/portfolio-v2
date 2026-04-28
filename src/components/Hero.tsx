@@ -118,7 +118,7 @@ export default function Hero() {
           </div>
 
           <p className="hero-catch font-display max-w-xl text-pretty text-[clamp(1.25rem,2.2vw,1.75rem)] font-medium leading-tight tracking-tight text-[var(--color-fg)]">
-            {"Engineer × AI. Build the next layer of products.".split(" ").map((w, i) => (
+            {"Twenty years of building systems — now compounded by AI.".split(" ").map((w, i) => (
               <span
                 key={i}
                 className="inline-block translate-y-4 opacity-0 will-change-transform"
@@ -176,9 +176,9 @@ export default function Hero() {
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--color-accent)] opacity-60" />
             <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--color-accent)]" />
           </span>
-          <span className="text-[var(--color-fg)]">Available</span>
+          <span className="text-[var(--color-fg)]">Building products</span>
           <span>—</span>
-          <span>Osaka / JP</span>
+          <span>Osaka × Tokyo</span>
         </span>
 
         <div className="hero-toolbelt relative overflow-hidden">

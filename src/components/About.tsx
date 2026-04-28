@@ -57,7 +57,7 @@ export default function About() {
         index="01"
         eyebrow="About"
         title={<>Hello, <span className="text-[var(--color-accent)]">こんにちは。</span></>}
-        description="1982年 大阪生まれ。大学卒業後、システム開発会社を経て 2012 年に独立。フリーランスのエンジニアとして、見積もり・PM・要件定義・設計・開発・テストまで、規模と予算に応じてあらゆるポジションを担っています。"
+        description="大阪生まれのシステム職人。新卒で SI ベンダーに入り、.Net / Java / PHP / Cobol で20年近くシステムを書き続けてきました。28歳でフリーランスへ転身、30代でデザイン基礎を学び、現在はサービスの開発責任を担う立場で日々奔走しています。"
       />
 
       <div className="grid gap-12 md:grid-cols-[5fr_7fr] md:gap-20">
@@ -82,13 +82,19 @@ export default function About() {
         <div className="flex flex-col justify-between gap-12">
           <div className="space-y-6 font-jp text-[15px] leading-[1.9] text-[var(--color-fg-muted)] md:text-base">
             <p className="about-line text-[var(--color-fg)]">
-              人と人の出会いが、成長につながる。
+              人と人の出会いが、自分を作ってきた。
             </p>
             <p className="about-line">
-              フリーランスとして主にシステム開発会社のプロジェクトに参画し、見積もりからプロジェクト管理、要件定義、設計、開発、テストまで、案件の規模と予算に応じて様々なポジションを担当してきました。
+              新卒からもうすぐ20年、システム開発という仕事に向き合ってきました。
+              SI ベンダーで .Net・Java・PHP・Cobol を学び、官公庁系の業務システムから金融・流通まで、規模の異なる現場を渡り歩いてきました。
+              28歳でフリーランスへ転身してからは、提案・見積もりから運用まで引き受けるなかで、「食わず嫌いせず、時代に合わせた技術と触れ合う」姿勢が染みつきました。
             </p>
             <p className="about-line">
-              立場や役割を超えて、ビジネスの構想と現場の実装を翻訳すること。
+              30代前半、C向けサービスに本気で向き合うにはコードや基盤の力だけでは足りないと感じ、デジハリでデザイン基礎を学習。
+              オフショア事業に関わって英語にも少しずつ触れてきました。
+            </p>
+            <p className="about-line">
+              いまは運営しているサービスの開発責任者として、日々奔走しています。
               プロジェクトを「動かす」だけでなく、「育てていける」状態にすること。
               それが私の関わり方のスタンスです。
             </p>
@@ -98,7 +104,7 @@ export default function About() {
             {[
               { k: "Born", v: "1982 / 大阪" },
               { k: "Role", v: "System Developer" },
-              { k: "Since", v: "Freelance · 2012" },
+              { k: "Since", v: "System Dev · 2007 ~" },
             ].map((item) => (
               <div
                 key={item.k}

@@ -104,7 +104,7 @@ export default function Works() {
         index="04"
         eyebrow="Selected Works"
         title={<>Projects, <span className="text-[var(--color-accent)]">shipped.</span></>}
-        description="代表的な開発プロジェクト。プロジェクト管理から実装まで、参画フェーズと役割は規模に応じて変動します。"
+        description="SI 時代の業務システムから、フリーランス時代の C向けサービス、そして自社プロダクトまで。フェーズと役割は規模に応じて変動しますが、軸は常に「システムを書ききる」ことです。"
       />
 
       {/* Filters */}

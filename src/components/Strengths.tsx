@@ -42,7 +42,7 @@ const ITEMS = [
     en: "Programming",
     jp: "プログラミング",
     body: "業務と運用を見据え、処理方式の設計、フレームワーク／基盤実装まで担い、機能開発と土台の両方を構築できる。",
-    metric: "13+",
+    metric: ".Net / Java / PHP / Cobol",
     metricLabel: "Languages in production",
     accent: "from-[#ff3cb8]/40 to-transparent",
     glyph: (
@@ -133,7 +133,7 @@ export default function Strengths() {
           index="02"
           eyebrow="Strengths"
           title={<>3 axes of <span className="text-[var(--color-accent)]">delivery.</span></>}
-          description="マネジメント・システム設計・プログラミング — それぞれを単独でも、組み合わせても担当できることが私の強みです。"
+          description="マネジメント・システム設計・プログラミング — どれも単独で動かせる主軸であり、組み合わせて一気通貫でも回せる。20年の現場で磨いてきた3つの軸です。"
         />
       </div>
 
@@ -206,7 +206,17 @@ function Card({ item, large = false }: { item: Item; large?: boolean }) {
 
         <div className="flex items-end justify-between border-t border-[var(--color-line)] pt-6">
           <div>
-            <p className={`font-display font-medium leading-none tracking-tight text-[var(--color-fg)] ${large ? "text-5xl" : "text-3xl"}`}>
+            <p
+              className={`font-display font-medium leading-tight tracking-tight text-[var(--color-fg)] ${
+                item.metric.length > 8
+                  ? large
+                    ? "text-2xl md:text-[28px]"
+                    : "text-base md:text-lg"
+                  : large
+                    ? "text-5xl"
+                    : "text-3xl"
+              }`}
+            >
               {item.metric}
             </p>
             <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.3em] text-[var(--color-fg-muted)]">

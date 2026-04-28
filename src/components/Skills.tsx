@@ -123,7 +123,7 @@ export default function Skills() {
           index="03"
           eyebrow="Skills"
           title={<>Tech I write & <span className="text-[var(--color-accent)]">ship.</span></>}
-          description="言語・データベース・OS／プラットフォーム。長年の現場で触れてきたスタックです。"
+          description="新卒以来20年、SI から自社サービスまで、現場で使ってきた言語・データベース・OS／プラットフォーム。新しいスタックでも、設計と業務理解で速やかに合流します。"
         />
 
         <div className="mb-16 space-y-2">
@@ -150,7 +150,7 @@ export default function Skills() {
               得意な言語と<br />フレームワーク
             </h3>
             <p className="mt-6 max-w-md font-jp text-sm leading-relaxed text-[var(--color-fg-muted)]">
-              特に長く使ってきたものを 5 段階でレーティング。新しいスタックでも、業務理解と設計力でキャッチアップできます。
+              特に長く使ってきたものを 5 段階でレーティング。Cobol で叩き込まれた業務理解と、フレームワーク土台を組む設計力が、新しいスタックへのキャッチアップ速度に直結しています。
             </p>
           </div>
           <div>
