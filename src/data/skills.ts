@@ -1,47 +1,49 @@
-export type Logo = { name: string; src: string };
+export type SkillCategory = "language" | "database" | "platform";
 
-export const PG_LOGOS: Logo[] = [
-  { name: "PHP", src: "/images/pg/PHP.webp" },
-  { name: "Java", src: "/images/pg/Java.webp" },
-  { name: "C#", src: "/images/pg/csharp.webp" },
-  { name: "TypeScript", src: "/images/pg/typescript.webp" },
-  { name: "JavaScript", src: "/images/pg/js.webp" },
-  { name: "Python", src: "/images/pg/python.webp" },
-  { name: "Ruby", src: "/images/pg/ruby.webp" },
-  { name: "Go", src: "/images/pg/go.webp" },
-  { name: "Swift", src: "/images/pg/swift.webp" },
-  { name: "C++", src: "/images/pg/C++.webp" },
-  { name: "HTML5", src: "/images/pg/html5.webp" },
-  { name: "CSS3", src: "/images/pg/css3.webp" },
-  { name: "Visual Basic", src: "/images/pg/VB.webp" },
+export type Skill = {
+  name: string;
+  src: string;
+  category: SkillCategory;
+  /** Most-used technologies get a larger circle. */
+  major?: boolean;
+};
+
+export const CATEGORIES: { key: SkillCategory | "all"; label: string }[] = [
+  { key: "all", label: "All" },
+  { key: "language", label: "Language" },
+  { key: "database", label: "Database" },
+  { key: "platform", label: "Platform" },
 ];
 
-export const DB_LOGOS: Logo[] = [
-  { name: "Aurora", src: "/images/db/aws-aurora.webp" },
-  { name: "MySQL", src: "/images/db/mysql.webp" },
-  { name: "PostgreSQL", src: "/images/db/postgresql.webp" },
-  { name: "Oracle", src: "/images/db/oracledb.webp" },
-  { name: "SQL Server", src: "/images/db/SQLServer.webp" },
-  { name: "DB2", src: "/images/db/db2.webp" },
-];
+export const SKILLS: Skill[] = [
+  { name: "PHP", src: "/images/pg/PHP.webp", category: "language", major: true },
+  { name: "Java", src: "/images/pg/Java.webp", category: "language", major: true },
+  { name: "C#", src: "/images/pg/csharp.webp", category: "language", major: true },
+  { name: "TypeScript", src: "/images/pg/typescript.webp", category: "language", major: true },
+  { name: "JavaScript", src: "/images/pg/js.webp", category: "language", major: true },
+  { name: "Python", src: "/images/pg/python.webp", category: "language" },
+  { name: "Ruby", src: "/images/pg/ruby.webp", category: "language" },
+  { name: "Go", src: "/images/pg/go.webp", category: "language" },
+  { name: "Swift", src: "/images/pg/swift.webp", category: "language" },
+  { name: "C++", src: "/images/pg/C++.webp", category: "language" },
+  { name: "HTML5", src: "/images/pg/html5.webp", category: "language" },
+  { name: "CSS3", src: "/images/pg/css3.webp", category: "language" },
+  { name: "Visual Basic", src: "/images/pg/VB.webp", category: "language" },
 
-export const OS_LOGOS: Logo[] = [
-  { name: "AWS", src: "/images/os/aws.webp" },
-  { name: "Linux", src: "/images/os/centOS.webp" },
-  { name: "Red Hat", src: "/images/os/redhat.webp" },
-  { name: "Windows", src: "/images/os/windows.webp" },
-  { name: "macOS", src: "/images/os/apple.webp" },
-  { name: "iOS", src: "/images/os/apple.webp" },
-  { name: "Android", src: "/images/os/android.webp" },
-  { name: "Solaris", src: "/images/os/Solaris.webp" },
-  { name: "AIX", src: "/images/os/aix.webp" },
-];
+  { name: "Aurora", src: "/images/db/aws-aurora.webp", category: "database", major: true },
+  { name: "MySQL", src: "/images/db/mysql.webp", category: "database", major: true },
+  { name: "PostgreSQL", src: "/images/db/postgresql.webp", category: "database", major: true },
+  { name: "Oracle", src: "/images/db/oracledb.webp", category: "database" },
+  { name: "SQL Server", src: "/images/db/SQLServer.webp", category: "database" },
+  { name: "DB2", src: "/images/db/db2.webp", category: "database" },
 
-export const RATINGS = [
-  { name: "PHP / Laravel", level: 4.5 },
-  { name: "Java", level: 4 },
-  { name: "C# / .NET", level: 4 },
-  { name: "VB.NET", level: 3.5 },
-  { name: "TypeScript / JavaScript", level: 4 },
-  { name: "HTML5 / CSS3", level: 3.5 },
+  { name: "AWS", src: "/images/os/aws.webp", category: "platform", major: true },
+  { name: "Linux", src: "/images/os/centOS.webp", category: "platform", major: true },
+  { name: "Red Hat", src: "/images/os/redhat.webp", category: "platform" },
+  { name: "Windows", src: "/images/os/windows.webp", category: "platform" },
+  { name: "macOS", src: "/images/os/apple.webp", category: "platform" },
+  { name: "iOS", src: "/images/os/apple.webp", category: "platform" },
+  { name: "Android", src: "/images/os/android.webp", category: "platform" },
+  { name: "Solaris", src: "/images/os/Solaris.webp", category: "platform" },
+  { name: "AIX", src: "/images/os/aix.webp", category: "platform" },
 ];

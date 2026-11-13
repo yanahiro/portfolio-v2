@@ -1,32 +1,23 @@
 import About from "@/components/About";
+import Career from "@/components/Career";
 import Contact from "@/components/Contact";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
-import SectionSplitter from "@/components/SectionSplitter";
-import SideProgress from "@/components/SideProgress";
 import Skills from "@/components/Skills";
-import Strengths from "@/components/Strengths";
-import Vision from "@/components/Vision";
-import Works from "@/components/Works";
+import ParticleStageLazy from "@/components/particles/ParticleStageLazy";
 
 export default function Home() {
   return (
     <>
+      <ParticleStageLazy />
       <Header />
-      <SideProgress />
-      <main>
+      <main className="relative z-10">
         <Hero />
-        <SectionSplitter />
+        <Career />
         <About />
-        <SectionSplitter />
-        <Strengths />
-        <SectionSplitter />
         <Skills />
-        <SectionSplitter />
-        <Works />
-        <SectionSplitter />
-        <Vision />
-        <SectionSplitter />
+        {/* A quiet stretch of backdrop before the last screen. */}
+        <div aria-hidden className="h-[35svh]" />
         <Contact />
       </main>
     </>
