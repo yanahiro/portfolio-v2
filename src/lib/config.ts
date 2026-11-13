@@ -6,9 +6,11 @@ const X_HANDLE = env("NEXT_PUBLIC_X_HANDLE", "yanatch1982");
 export const siteConfig = {
   name: env("NEXT_PUBLIC_SITE_NAME", "Yanatch"),
   brand: env("NEXT_PUBLIC_BRAND", "Yanatch"),
+  /** Public origin, used to build absolute URLs for share images. Empty in local dev. */
+  url: env("NEXT_PUBLIC_SITE_URL"),
   description: env(
     "NEXT_PUBLIC_SITE_DESCRIPTION",
-    "Hiroki Yanagisawa のポートフォリオ。マネジメント・システム設計・プログラミングを軸に、フリーランスエンジニアとして活動しています。"
+    "Hiroki Yanagisawa のポートフォリオ。株式会社Wunderbar CTO / エンジニア。新卒からシステム開発に関わって、もうすぐ20年目。"
   ),
   social: {
     xHandle: X_HANDLE,

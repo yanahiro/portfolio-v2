@@ -1,35 +1,30 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter, Noto_Sans_JP, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, Noto_Sans_JP, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import SmoothScroll from "@/components/SmoothScroll";
-import Cursor from "@/components/Cursor";
-import Loader from "@/components/Loader";
 import { siteConfig } from "@/lib/config";
 
 const display = Space_Grotesk({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const sans = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
-});
-
-const jp = Noto_Sans_JP({
-  variable: "--font-jp",
+  variable: "--ff-display",
   subsets: ["latin"],
   weight: ["400", "500", "700"],
 });
 
-const mono = JetBrains_Mono({
-  variable: "--font-mono",
+const jp = Noto_Sans_JP({
+  variable: "--ff-jp",
   subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
+const mono = JetBrains_Mono({
+  variable: "--ff-mono",
+  subsets: ["latin"],
+  weight: ["400", "500"],
 });
 
 export const metadata: Metadata = {
-  title: "Hiroki Yanagisawa — System Developer",
+  ...(siteConfig.url ? { metadataBase: new URL(siteConfig.url) } : {}),
+  title: "Hiroki Yanagisawa — CTO / Engineer",
   description: siteConfig.description,
 };
 
@@ -39,14 +34,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="ja"
-      className={`${display.variable} ${sans.variable} ${jp.variable} ${mono.variable} h-full antialiased`}
-    >
-      <body className="grain min-h-full flex flex-col">
-        <Loader />
+    <html lang="ja" className={`${display.variable} ${jp.variable} ${mono.variable} antialiased`}>
+      <body>
         <SmoothScroll />
-        <Cursor />
         {children}
       </body>
     </html>
