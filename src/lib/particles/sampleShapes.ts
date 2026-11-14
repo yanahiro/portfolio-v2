@@ -38,6 +38,9 @@ type PixelMode =
   /** The whole image; density and brightness follow luminance (photos). */
   | "luma";
 
+/** Luminance treated as full white when a photo is turned into particles. */
+const PHOTO_WHITE = 0.6;
+
 function makeCanvas(w: number, h: number) {
   const canvas = document.createElement("canvas");
   canvas.width = w;
@@ -68,8 +71,9 @@ function fromPixels(
     if (mode === "alpha") {
       weight = a > 128 ? 1 : 0;
     } else {
-      // Push the contrast so dark areas empty out and the subject reads.
-      const lit = Math.pow(luma, 1.8);
+      // Push the contrast so dark areas empty out and the subject reads. Highlights are
+      // clipped so skin is as dense as white clothing instead of fading beside it.
+      const lit = Math.pow(Math.min(luma / PHOTO_WHITE, 1), 1.7);
       weight = 0.02 + lit;
       bri = 0.2 + 0.8 * lit;
     }
@@ -330,7 +334,7 @@ export async function buildShapes(
   const code = { prompt: ">_", helloWorld: "Hello,\nWorld_" };
   const hello = { text: "Say hello.", cursor: "_" };
   const [photo] = await Promise.all([
-    fromImage("/images/profile/me.webp", count, "luma", 420),
+    fromImage("/images/profile/portrait.webp", count, "luma", 420),
     // The canvas silently falls back to another face unless the web fonts are in memory first.
     document.fonts.load(textFont(displayFont), hello.text + hello.cursor).catch(() => []),
     document.fonts.load(textFont(monoFont), Object.values(code).join("")).catch(() => []),

@@ -8,6 +8,8 @@ export const siteConfig = {
   brand: env("NEXT_PUBLIC_BRAND", "Yanatch"),
   /** Public origin, used to build absolute URLs for share images. Empty in local dev. */
   url: env("NEXT_PUBLIC_SITE_URL"),
+  /** Google Tag Manager container ID (GTM-XXXXXXX). Empty turns tracking off. */
+  gtmId: env("NEXT_PUBLIC_GTM_ID"),
   description: env(
     "NEXT_PUBLIC_SITE_DESCRIPTION",
     "Hiroki Yanagisawa のポートフォリオ。株式会社Wunderbar CTO / エンジニア。新卒からシステム開発に関わって、もうすぐ20年目。"

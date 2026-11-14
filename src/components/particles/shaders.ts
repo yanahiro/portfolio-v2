@@ -1,3 +1,18 @@
+const PALETTE = /* glsl */ `
+// Lime, aqua, violet, coral, and back to lime.
+vec3 palette(float t) {
+  t = fract(t) * 4.0;
+  vec3 lime = vec3(0.714, 1.0, 0.235);
+  vec3 aqua = vec3(0.3, 0.92, 1.0);
+  vec3 violet = vec3(0.68, 0.58, 1.0);
+  vec3 coral = vec3(1.0, 0.56, 0.4);
+  if (t < 1.0) return mix(lime, aqua, smoothstep(0.0, 1.0, t));
+  if (t < 2.0) return mix(aqua, violet, smoothstep(0.0, 1.0, t - 1.0));
+  if (t < 3.0) return mix(violet, coral, smoothstep(0.0, 1.0, t - 2.0));
+  return mix(coral, lime, smoothstep(0.0, 1.0, t - 3.0));
+}
+`;
+
 export const vertexShader = /* glsl */ `
 attribute vec3 aFrom;
 attribute vec3 aTo;
@@ -18,6 +33,11 @@ uniform vec2 uAlpha;
 uniform vec2 uSize;
 uniform vec2 uAccent;
 uniform vec2 uCycle;
+uniform vec2 uGrad; // how strongly each shape takes its own two-colour gradient
+uniform vec3 uGradFromA;
+uniform vec3 uGradFromB;
+uniform vec3 uGradToA;
+uniform vec3 uGradToB;
 uniform float uVelocity; // smoothed scroll speed, px per frame
 uniform vec2 uType; // typed text: visible up to x, and the cursor's shift
 
@@ -25,20 +45,10 @@ varying float vAlpha;
 varying float vAccent;
 varying float vCycle;
 varying vec3 vCycleColor;
+varying float vGrad;
+varying vec3 vGradColor;
 
-// Lime, aqua, violet, coral, and back to lime.
-vec3 palette(float t) {
-  t = fract(t) * 4.0;
-  vec3 lime = vec3(0.714, 1.0, 0.235);
-  vec3 aqua = vec3(0.3, 0.92, 1.0);
-  vec3 violet = vec3(0.68, 0.58, 1.0);
-  vec3 coral = vec3(1.0, 0.56, 0.4);
-  if (t < 1.0) return mix(lime, aqua, smoothstep(0.0, 1.0, t));
-  if (t < 2.0) return mix(aqua, violet, smoothstep(0.0, 1.0, t - 1.0));
-  if (t < 3.0) return mix(violet, coral, smoothstep(0.0, 1.0, t - 2.0));
-  return mix(coral, lime, smoothstep(0.0, 1.0, t - 3.0));
-}
-
+${PALETTE}
 vec3 rotate(vec3 p) {
   float cy = cos(uRot.x), sy = sin(uRot.x);
   float cx = cos(uRot.y), sx = sin(uRot.y);
@@ -94,6 +104,12 @@ void main() {
   // The colours travel across the shape, so neighbouring letters differ slightly.
   vCycle = mix(uCycle.x, uCycle.y, m) * (1.0 - still);
   vCycleColor = palette(uTime * 0.07 - p.x * 0.0007);
+  // A shape's own gradient runs across it (shapes span about -1..1) and drifts slowly.
+  float drift = sin(uTime * 0.35) * 0.18 * (1.0 - still);
+  vec3 fromGrad = mix(uGradFromA, uGradFromB, smoothstep(0.0, 1.0, (aFrom.x + aFrom.y * 0.35) * 0.5 + 0.5 + drift));
+  vec3 toGrad = mix(uGradToA, uGradToB, smoothstep(0.0, 1.0, (aTo.x + aTo.y * 0.35) * 0.5 + 0.5 + drift));
+  vGrad = mix(uGrad.x, uGrad.y, m);
+  vGradColor = mix(fromGrad, toGrad, m);
 }
 `;
 
@@ -105,11 +121,14 @@ varying float vAlpha;
 varying float vAccent;
 varying float vCycle;
 varying vec3 vCycleColor;
+varying float vGrad;
+varying vec3 vGradColor;
 
 void main() {
   float d = length(gl_PointCoord - 0.5);
   if (d > 0.5) discard;
-  vec3 color = mix(mix(uColor, uAccentColor, vAccent), vCycleColor, vCycle);
+  vec3 color = mix(mix(uColor, uAccentColor, vAccent), vGradColor, vGrad);
+  color = mix(color, vCycleColor, vCycle);
   gl_FragColor = vec4(color, smoothstep(0.5, 0.25, d) * vAlpha);
 }
 `;
@@ -207,5 +226,77 @@ void main() {
   // Grain hides banding in the dark gradient.
   alpha += (hash(gl_FragCoord.xy + fract(uTime) * 91.0) - 0.5) * 0.012;
   gl_FragColor = vec4(color, max(alpha, 0.0));
+}
+`;
+
+/**
+ * Globe behind "Say hello.": dots on a slowly turning sphere, with a few arcs
+ * that a light runs along. aInfo = (0 dot | 1 arc, position along the arc, seed).
+ */
+export const globeVertexShader = /* glsl */ `
+attribute vec3 aInfo;
+
+uniform vec3 uGlobe; // centre (px) and radius
+uniform float uSpin;
+uniform vec2 uRot;
+uniform float uShow;
+uniform float uTime;
+uniform float uDpr;
+uniform float uReduced;
+uniform float uBand; // half height of the text the globe sits behind (px)
+
+varying float vAlpha;
+varying vec3 vTint;
+varying float vArc;
+
+${PALETTE}
+
+void main() {
+  float cs = cos(uSpin), sn = sin(uSpin);
+  vec3 p = vec3(position.x * cs + position.z * sn, position.y, -position.x * sn + position.z * cs);
+  // Leaning axis, plus the same pointer tilt as the particles in front.
+  float tilt = 0.38 + uRot.y * 0.6;
+  float ct = cos(tilt), st = sin(tilt);
+  p = vec3(p.x, p.y * ct - p.z * st, p.y * st + p.z * ct);
+  float lean = -0.2 + uRot.x * 0.4;
+  float cl = cos(lean), sl = sin(lean);
+  p = vec3(p.x * cl - p.y * sl, p.x * sl + p.y * cl, p.z);
+
+  // It grows a little as it arrives, and the dots come in a few at a time.
+  float radius = uGlobe.z * (0.9 + 0.1 * uShow);
+  vec2 px = p.xy * radius + uGlobe.xy;
+  float arrive = smoothstep(aInfo.z * 0.7, aInfo.z * 0.7 + 0.3, uShow);
+  float front = smoothstep(-1.0, 1.0, p.z);
+  // Dimmer right behind the words so they stay easy to read.
+  float clear = mix(0.45, 1.0, smoothstep(uBand * 0.7, uBand * 1.8, abs(px.y - uGlobe.y)));
+
+  float isArc = aInfo.x;
+  float head = fract(uTime * 0.11 + aInfo.z);
+  float behind = head - aInfo.y;
+  float pulse = behind > 0.0 ? smoothstep(0.3, 0.0, behind) * smoothstep(0.0, 0.08, head) * smoothstep(1.0, 0.85, head) : 0.0;
+  pulse = mix(pulse, 0.25, step(0.5, uReduced));
+  float dotAlpha = 0.14 + 0.5 * front * front;
+  float arcAlpha = (0.1 + 0.9 * pulse) * (0.35 + 0.65 * front);
+  vAlpha = mix(dotAlpha, arcAlpha, isArc) * arrive * clear * uShow;
+  vTint = palette(uTime * 0.07 - px.x * 0.0007);
+  vArc = isArc;
+
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(px, 0.0, 1.0);
+  gl_PointSize = mix(1.6 + 1.1 * front, 1.8 + 1.8 * pulse, isArc) * uDpr;
+}
+`;
+
+export const globeFragmentShader = /* glsl */ `
+uniform vec3 uColor;
+
+varying float vAlpha;
+varying vec3 vTint;
+varying float vArc;
+
+void main() {
+  float d = length(gl_PointCoord - 0.5);
+  if (d > 0.5) discard;
+  vec3 color = mix(uColor, vTint, mix(0.45, 0.9, vArc));
+  gl_FragColor = vec4(color, smoothstep(0.5, 0.2, d) * vAlpha);
 }
 `;

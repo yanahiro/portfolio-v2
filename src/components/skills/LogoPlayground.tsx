@@ -13,7 +13,7 @@ const SETTLE_STEPS = 240;
 /** Share of the field that must be on screen before the logos drop in. */
 const ENTER_RATIO = 0.3;
 
-export default function LogoPlayground() {
+export default function LogoPlayground({ filterLabel }: { filterLabel: string }) {
   const fieldRef = useRef<HTMLUListElement>(null);
   const filterRef = useRef<Filter>("all");
   const applyFilterRef = useRef<(filter: Filter) => void>(() => {});
@@ -220,7 +220,7 @@ export default function LogoPlayground() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <h2 className="font-display text-xl font-medium tracking-[0.3em]">SKILLS</h2>
-        <div className="flex flex-wrap gap-x-6 gap-y-1" role="group" aria-label="カテゴリで絞り込み">
+        <div className="flex flex-wrap gap-x-6 gap-y-1" role="group" aria-label={filterLabel}>
           {CATEGORIES.map((c) => (
             <button
               key={c.key}
