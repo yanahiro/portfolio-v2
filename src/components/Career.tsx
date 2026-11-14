@@ -1,14 +1,11 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { CAREER } from "@/data/career";
+import type { CareerScene } from "@/data/career";
 import { ScrollTrigger, useGSAP } from "@/lib/gsap";
-import { CAREER_TRIGGER_ID, careerScene } from "@/lib/particles/scenes";
+import { CAREER_PIN_LENGTH, CAREER_TRIGGER_ID, careerScene } from "@/lib/particles/scenes";
 
-/** Scroll distance of the pinned section, in viewport heights. */
-const PIN_LENGTH = 4.5;
-
-export default function Career() {
+export default function Career({ items, label }: { items: CareerScene[]; label: string }) {
   const rootRef = useRef<HTMLElement>(null);
   const pinRef = useRef<HTMLDivElement>(null);
   const barRef = useRef<HTMLSpanElement>(null);
@@ -20,7 +17,7 @@ export default function Career() {
         id: CAREER_TRIGGER_ID,
         trigger: pinRef.current,
         start: "top top",
-        end: () => `+=${window.innerHeight * PIN_LENGTH}`,
+        end: () => `+=${window.innerHeight * CAREER_PIN_LENGTH}`,
         pin: true,
         invalidateOnRefresh: true,
         onUpdate: (self) => {
@@ -33,7 +30,7 @@ export default function Career() {
   );
 
   return (
-    <section id="career" ref={rootRef} aria-label="経歴">
+    <section id="career" ref={rootRef} aria-label={label}>
       <div ref={pinRef} className="relative flex h-[100svh] flex-col justify-end px-6 pb-8 md:px-12">
         {/* The particle stage morphs through the career shapes inside this box. */}
         <div
@@ -43,9 +40,9 @@ export default function Career() {
         />
 
         <ol className="relative h-40 md:h-44">
-          {CAREER.map((item, i) => (
+          {items.map((item, i) => (
             <li key={item.when} className="career-caption" data-active={i === scene}>
-              <p className="font-mono text-xs tracking-[0.2em] text-[var(--color-fg-muted)] data-[last=true]:text-[var(--color-accent)]" data-last={i === CAREER.length - 1}>
+              <p className="font-mono text-xs tracking-[0.2em] text-[var(--color-fg-muted)] data-[last=true]:text-[var(--color-accent)]" data-last={i === items.length - 1}>
                 {item.when}
               </p>
               <p className="font-display mt-3 text-[clamp(1.75rem,4.4vw,3.25rem)] font-bold leading-tight">
@@ -60,8 +57,8 @@ export default function Career() {
 
         <div className="mt-6 flex flex-col gap-3" aria-hidden>
           <div className="flex justify-between font-mono text-xs text-[var(--color-fg-muted)]">
-            {CAREER.map((item, i) => (
-              <span key={item.when} className="career-mark" data-active={i === scene} data-last={i === CAREER.length - 1}>
+            {items.map((item, i) => (
+              <span key={item.when} className="career-mark" data-active={i === scene} data-last={i === items.length - 1}>
                 {String(i + 1).padStart(2, "0")}
               </span>
             ))}

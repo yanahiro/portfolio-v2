@@ -14,23 +14,30 @@ import {
   WebGLRenderer,
 } from "three";
 import { gsap, ScrollTrigger, prefersReducedMotion } from "@/lib/gsap";
+import { buildGlobe } from "@/lib/particles/globe";
 import { buildShapes, type Shape } from "@/lib/particles/sampleShapes";
 import { CAREER_TRIGGER_ID, STOPS, type ShapeId, type Stop } from "@/lib/particles/scenes";
 import {
   backdropFragmentShader,
   backdropVertexShader,
   fragmentShader,
+  globeFragmentShader,
+  globeVertexShader,
   hazeFragmentShader,
   hazeVertexShader,
   vertexShader,
 } from "./shaders";
 
 const READY_CLASS = "particles-on";
-/** Share of each segment's scroll distance spent holding a finished shape. */
-const HOLD = 0.2;
+/** Most of a segment's scroll distance that the two holds may take up together. */
+const MAX_HOLD_SHARE = 0.6;
 const POINTER_PUSH = 42;
 /** Scroll distance per frame (px) beyond which the trail stops growing. */
 const MAX_SCROLL_STEP = 70;
+/** How much of a shape's gradient replaces the foreground colour. */
+const GRADIENT_STRENGTH = 0.85;
+/** Seconds for the globe behind "Say hello." to turn once. */
+const GLOBE_TURN = 52;
 /** Seconds between typed glyphs. */
 const TYPE_INTERVAL = 0.13;
 /** Reveal limit for shapes that are not typed: everything is visible. */
@@ -162,6 +169,11 @@ export default function ParticleStage() {
         uSize: { value: { x: 1.7, y: 1.7 } },
         uAccent: { value: { x: 0, y: 0 } },
         uCycle: { value: { x: 0, y: 0 } },
+        uGrad: { value: { x: 0, y: 0 } },
+        uGradFromA: { value: new Color() },
+        uGradFromB: { value: new Color() },
+        uGradToA: { value: new Color() },
+        uGradToB: { value: new Color() },
         uVelocity: { value: 0 },
         uType: { value: { x: NOT_TYPED, y: 0 } },
         uColor: { value: new Color(rootStyle.getPropertyValue("--color-fg").trim() || "#e8e8e4") },
@@ -222,6 +234,37 @@ export default function ParticleStage() {
       specks.renderOrder = -1;
       scene.add(specks);
 
+      // Globe behind "Say hello."; it arrives once the words have been typed.
+      const globeUniforms = {
+        uGlobe: { value: { x: 0, y: 0, z: 1 } },
+        uSpin: { value: 0 },
+        uRot: uniforms.uRot,
+        uShow: { value: 0 },
+        uTime: uniforms.uTime,
+        uDpr: { value: dpr },
+        uReduced: uniforms.uReduced,
+        uBand: { value: 80 },
+        uColor: uniforms.uColor,
+      };
+      const globePoints = buildGlobe(isSmallScreen() ? 1500 : 3400);
+      const globeGeometry = new BufferGeometry();
+      globeGeometry.setAttribute("position", new BufferAttribute(globePoints.position, 3));
+      globeGeometry.setAttribute("aInfo", new BufferAttribute(globePoints.info, 3));
+      const globeMaterial = new ShaderMaterial({
+        vertexShader: globeVertexShader,
+        fragmentShader: globeFragmentShader,
+        uniforms: globeUniforms,
+        transparent: true,
+        depthTest: false,
+        depthWrite: false,
+      });
+      const globe = new Points(globeGeometry, globeMaterial);
+      globe.frustumCulled = false;
+      globe.renderOrder = -0.5;
+      globe.visible = false;
+      scene.add(globe);
+      let globeShow = 0;
+
       const resize = () => {
         const w = window.innerWidth;
         const h = window.innerHeight;
@@ -258,6 +301,16 @@ export default function ParticleStage() {
         uniforms.uSize.value = { x: from.size, y: to.size };
         uniforms.uAccent.value = { x: from.accent, y: to.accent };
         uniforms.uCycle.value = { x: from.cycle ?? 0, y: to.cycle ?? 0 };
+        uniforms.uGrad.value = { x: from.gradient ? GRADIENT_STRENGTH : 0, y: to.gradient ? GRADIENT_STRENGTH : 0 };
+        // A side without a gradient borrows the other side's, so the colour only fades in or out.
+        const fromGradient = from.gradient ?? to.gradient;
+        const toGradient = to.gradient ?? from.gradient;
+        if (fromGradient && toGradient) {
+          uniforms.uGradFromA.value.set(fromGradient[0]);
+          uniforms.uGradFromB.value.set(fromGradient[1]);
+          uniforms.uGradToA.value.set(toGradient[0]);
+          uniforms.uGradToB.value.set(toGradient[1]);
+        }
       };
 
       // Pointer: push particles away, tilt the shape, drag to spin it.
@@ -315,8 +368,17 @@ export default function ParticleStage() {
 
         const from = stops[index];
         const to = stops[Math.min(index + 1, stops.length - 1)];
-        const raw = to.y > from.y ? (y - from.y) / (to.y - from.y) : 0;
-        uniforms.uMix.value = Math.min(Math.max((raw - HOLD) / (1 - HOLD * 2), 0), 1);
+        // Each shape stays formed for a while around its stop; the morph runs in between.
+        const span = to.y - from.y;
+        let holdFrom = from.hold * window.innerHeight;
+        let holdTo = to.hold * window.innerHeight;
+        const fit = (span * MAX_HOLD_SHARE) / (holdFrom + holdTo);
+        if (fit < 1) {
+          holdFrom *= fit;
+          holdTo *= fit;
+        }
+        const morph = span - holdFrom - holdTo;
+        uniforms.uMix.value = morph > 0 ? Math.min(Math.max((y - from.y - holdFrom) / morph, 0), 1) : 0;
 
         const step = Math.min(Math.max(y - lastScroll, -MAX_SCROLL_STEP), MAX_SCROLL_STEP);
         lastScroll = y;
@@ -326,6 +388,7 @@ export default function ParticleStage() {
         // Reduced motion: nothing moves on its own.
         const idle = reduced ? 0 : time;
         const typing = shapes[to.shape].typing;
+        let typedAll = false;
         if (typing) {
           // Start once the text has gathered, then add a glyph every TYPE_INTERVAL.
           if (typingStart === -1 && uniforms.uMix.value > 0.9) typingStart = time;
@@ -333,7 +396,8 @@ export default function ParticleStage() {
           const typedGlyphs =
             typingStart === -1 ? 0 : Math.min(last, Math.floor((time - typingStart) / TYPE_INTERVAL));
           uniforms.uType.value = { x: typing.reveal[typedGlyphs], y: typing.cursorShift[typedGlyphs] };
-          if (typedGlyphs === last) document.documentElement.dataset.helloTyped = "true";
+          typedAll = typedGlyphs === last;
+          if (typedAll) document.documentElement.dataset.helloTyped = "true";
         } else {
           uniforms.uType.value = { x: NOT_TYPED, y: 0 };
         }
@@ -360,6 +424,24 @@ export default function ParticleStage() {
         uniforms.uRot.value = { x: rot.x, y: rot.y };
 
         uniforms.uTime.value = time;
+
+        // The globe fades in behind the typed words and out again when they scatter.
+        const globeTarget = typedAll ? Math.min(Math.max((uniforms.uMix.value - 0.5) / 0.4, 0), 1) : 0;
+        globeShow += (globeTarget - globeShow) * (reduced ? 1 : 0.025);
+        globe.visible = globeShow > 0.003;
+        if (globe.visible && to.el) {
+          const rect = to.el.getBoundingClientRect();
+          const vw = window.innerWidth;
+          const vh = window.innerHeight;
+          globeUniforms.uGlobe.value = {
+            x: rect.left + rect.width / 2 - vw / 2,
+            y: vh / 2 - (rect.top + rect.height / 2),
+            z: Math.min(vw * 0.62, vh * 0.44),
+          };
+          globeUniforms.uBand.value = rect.height / 2;
+          globeUniforms.uSpin.value = (idle / GLOBE_TURN) * Math.PI * 2;
+          globeUniforms.uShow.value = globeShow;
+        }
         backdropUniforms.uTime.value = idle;
         backdropUniforms.uScroll.value = reduced ? 0 : y;
         const mix = uniforms.uMix.value;
@@ -385,6 +467,8 @@ export default function ParticleStage() {
         hazeMaterial.dispose();
         speckGeometry.dispose();
         speckMaterial.dispose();
+        globeGeometry.dispose();
+        globeMaterial.dispose();
         renderer.dispose();
         renderer.domElement.remove();
       };
