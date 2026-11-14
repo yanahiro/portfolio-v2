@@ -1,4 +1,5 @@
 import "../globals.css";
+import Analytics from "@/components/Analytics";
 import SmoothScroll from "@/components/SmoothScroll";
 import { buildMetadata } from "@/lib/metadata";
 import { fontClasses } from "../fonts";
@@ -12,6 +13,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SmoothScroll />
         {children}
       </body>
+      <Analytics />
     </html>
   );
 }
