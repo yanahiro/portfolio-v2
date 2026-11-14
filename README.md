@@ -55,7 +55,7 @@ npm run dev
 | `NEXT_PUBLIC_BRAND` | ブランド名 |
 | `NEXT_PUBLIC_SITE_URL` | 公開 URL（OG 画像の絶対 URL 生成に使用） |
 | `NEXT_PUBLIC_SITE_DESCRIPTION` | meta description |
-| `NEXT_PUBLIC_GA_ID` | Google Analytics 4 の測定 ID（`G-XXXXXXXXXX`）。空なら計測しない |
+| `NEXT_PUBLIC_GTM_ID` | Google Tag Manager のコンテナ ID（`GTM-XXXXXXX`）。空なら読み込まない。Google Analytics は GTM 側のタグで設定する |
 | `NEXT_PUBLIC_X_HANDLE` | X (Twitter) ハンドル |
 | `NEXT_PUBLIC_GITHUB_URL` | GitHub プロフィール URL |
 | `NEXT_PUBLIC_INSTAGRAM_URL` | Instagram プロフィール URL |

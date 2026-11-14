@@ -9,11 +9,11 @@ export const metadata = buildMetadata("ja");
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="ja" className={fontClasses}>
+      <Analytics />
       <body>
         <SmoothScroll />
         {children}
       </body>
-      <Analytics />
     </html>
   );
 }
